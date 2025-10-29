@@ -1,0 +1,65 @@
+=================================================================
+    CHEAT SHEET - PRESENTACION LEAGUE OF LEGENDS ML
+=================================================================
+
+SETUP INICIAL (Primera vez):
+-----------------------------
+git clone https://github.com/glYohanny/Eva_machine_learning.git
+cd Eva_machine_learning
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+
+COMANDOS PRINCIPALES:
+--------------------
+kedro run                          # Pipeline completo (~2 min)
+python ver_resultados.py           # Ver resultados en consola
+streamlit run dashboard_ml.py      # Dashboard interactivo
+
+PIPELINES INDIVIDUALES:
+----------------------
+kedro run --pipeline eda           # Análisis exploratorio (~45 seg)
+kedro run --pipeline training      # Solo entrenamiento (~1.5 min)
+
+VISUALIZACION:
+-------------
+python ver_resultados.py           # Consola
+streamlit run dashboard_ml.py      # Dashboard (http://localhost:8501)
+kedro jupyter notebook             # Jupyter
+
+VERIFICACION:
+------------
+kedro pipeline list                # Ver pipelines
+dir data/06_models                 # Ver modelos
+dir data/08_reporting              # Ver reportes
+
+DOCKER (Opcional):
+-----------------
+docker build -t league-kedro-ml .
+docker run -v ${PWD}/data:/app/data league-kedro-ml kedro run
+
+AIRFLOW (Opcional):
+------------------
+.\setup_airflow_windows.ps1        # Setup inicial
+docker-compose up -d               # Iniciar servicios
+http://localhost:8080              # UI (admin/admin)
+
+RESULTADOS CLAVE:
+----------------
+Clasificacion: SVM - 98.56% accuracy
+Regresion: Gradient Boosting - R2 = 0.7928
+Datos: 7,620 partidas, 246 equipos, 137 campeones
+Modelos: 10 entrenados (5 clasificacion + 5 regresion)
+
+TROUBLESHOOTING:
+---------------
+pip install --upgrade -r requirements.txt
+docker-compose down && docker-compose up -d
+Get-Content logs/info.log -Tail 50
+
+REPOSITORIO:
+-----------
+github.com/glYohanny/Eva_machine_learning
+
+=================================================================
+

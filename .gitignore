@@ -1,0 +1,134 @@
+# ==================================
+# GITIGNORE OPTIMIZADO - League of Legends ML Project
+# ==================================
+
+# ============ PYTHON ============
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ============ VIRTUAL ENVIRONMENTS ============
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# ============ JUPYTER ============
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ============ KEDRO - DATOS GENERADOS ============
+# NO subir datos procesados (se regeneran con kedro run)
+data/02_intermediate/*
+data/03_primary/*
+data/04_feature/*
+data/05_model_input/*
+data/06_models/*
+data/07_model_output/*
+data/08_reporting/*
+
+# EXCEPTO: Mantener las carpetas vacías
+!data/02_intermediate/.gitkeep
+!data/03_primary/.gitkeep
+!data/04_feature/.gitkeep
+!data/05_model_input/.gitkeep
+!data/06_models/.gitkeep
+!data/07_model_output/.gitkeep
+!data/08_reporting/.gitkeep
+
+# ============ KEDRO - LOGS ============
+logs/
+*.log
+info.log
+
+# ============ KEDRO - LOCAL CONFIG ============
+conf/local/
+!conf/local/.gitkeep
+
+# ============ AIRFLOW ============
+airflow/logs/*
+airflow/config/*
+airflow/plugins/*
+!airflow/logs/.gitkeep
+!airflow/config/.gitkeep
+!airflow/plugins/.gitkeep
+airflow/*.db
+airflow/*.pid
+airflow/*.cfg
+airflow/*.err
+airflow/*.out
+
+# ============ DOCKER ============
+# NO ignorar Dockerfiles, solo los volúmenes
+.docker/
+docker-volumes/
+
+# ============ DOCUMENTOS REDUNDANTES ============
+# Mantener solo los 6 documentos principales
+README_COMPLETO.md
+README_KEDRO.md
+README_DOCKER_AIRFLOW.md
+QUICK_START.md
+KEDRO_USAGE.md
+DOCKER_AIRFLOW_GUIDE.md
+DEPLOYMENT_SUMMARY.md
+INSTRUCCIONES_EJECUCION.md
+INSTRUCCIONES_ARREGLAR_AIRFLOW.md
+SOLUCION_ERROR_AIRFLOW.md
+SOLUCION_FINAL_AIRFLOW.md
+CHECKLIST_DEPLOYMENT.md
+CHECKLIST_EVALUACION.md
+
+# Docs redundantes
+docs/GUIA_DATOS_CSV.md
+docs/GUIA_PIPELINES_LIMPIEZA_ANALISIS.md
+docs/RESUMEN_PIPELINES.md
+
+# ============ IDE ============
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ============ TESTING ============
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# ============ OTROS ============
+*.bak
+*.tmp
+*.temp
+.env
+.envrc
+credentials.yml
+
+# ============ WINDOWS ============
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/

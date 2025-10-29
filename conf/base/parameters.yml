@@ -1,0 +1,111 @@
+# Parámetros para League of Legends ML Project
+# Configuración de features, modelos y evaluación
+
+# ============================================================================
+# CONFIGURACIÓN GENERAL
+# ============================================================================
+
+model_options:
+  # Semilla para reproducibilidad
+  random_state: 42
+  
+  # División train/test
+  test_size: 0.2
+  
+  # Features seleccionados para modelado
+  feature_columns:
+    - blue_kills
+    - red_kills
+    - kill_diff
+    - blue_dragons
+    - red_dragons
+    - dragon_diff
+    - blue_barons
+    - red_barons
+    - baron_diff
+    - blue_towers
+    - red_towers
+    - tower_diff
+    - blue_inhibs
+    - red_inhibs
+    - inhib_diff
+    - gold_diff_10
+    - gold_diff_15
+    - gold_diff_20
+  
+  # Targets
+  target_columns:
+    - gamelength
+    - bResult
+
+  # ============================================================================
+  # PARÁMETROS DE MODELOS DE REGRESIÓN
+  # ============================================================================
+  
+  regression_models:
+    # Ridge Regression
+    ridge_alpha: 1.0
+    
+    # Lasso Regression
+    lasso_alpha: 0.1
+    
+    # Random Forest Regressor
+    rf_n_estimators: 100
+    rf_max_depth: 15
+    
+    # Gradient Boosting Regressor
+    gb_n_estimators: 100
+    gb_learning_rate: 0.1
+
+  # ============================================================================
+  # PARÁMETROS DE MODELOS DE CLASIFICACIÓN
+  # ============================================================================
+  
+  classification_models:
+    # Logistic Regression
+    lr_max_iter: 1000
+    
+    # Random Forest Classifier
+    rf_n_estimators: 100
+    rf_max_depth: 15
+    
+    # Gradient Boosting Classifier
+    gb_n_estimators: 100
+    gb_learning_rate: 0.1
+    
+    # SVM
+    svm_kernel: rbf
+
+# ============================================================================
+# CONFIGURACIÓN DE VISUALIZACIÓN (Opcional para extensiones futuras)
+# ============================================================================
+
+visualization_options:
+  # Tamaño de figuras
+  figure_size_small: [10, 6]
+  figure_size_medium: [15, 8]
+  figure_size_large: [18, 12]
+  
+  # Estilos de colores
+  color_palette: husl
+  
+  # DPI para gráficos
+  dpi: 100
+
+# ============================================================================
+# CONFIGURACIÓN DE FEATURE ENGINEERING
+# ============================================================================
+
+feature_engineering:
+  # Minutos clave para análisis de gold
+  gold_minutes: [10, 15, 20]
+  
+  # Estrategia de imputación
+  imputation_strategy: median  # median, mean, most_frequent
+  
+  # Método de escalado
+  scaling_method: standard  # standard, minmax, robust
+
+
+
+

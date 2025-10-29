@@ -1,0 +1,282 @@
+# Data Catalog para League of Legends ML Project
+# Define todos los datasets de entrada, intermedios y salida
+
+# ============================================================================
+# DATOS RAW (01_raw)
+# ============================================================================
+
+raw_main_data:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/LeagueofLegends.csv
+
+raw_matchinfo:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/matchinfo.csv
+
+raw_kills:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/kills.csv
+
+raw_gold:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/gold.csv
+
+raw_bans:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/bans.csv
+
+raw_monsters:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/monsters.csv
+
+raw_structures:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/structures.csv
+
+# Mantener nombres antiguos para compatibilidad
+matchinfo:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/matchinfo.csv
+
+kills:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/kills.csv
+
+gold:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/gold.csv
+
+bans:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/bans.csv
+
+monsters:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/monsters.csv
+
+structures:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/structures.csv
+
+# ============================================================================
+# DATOS INTERMEDIOS (02_intermediate) - Feature Engineering
+# ============================================================================
+
+features_with_kills:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/features_with_kills.parquet
+
+features_with_monsters:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/features_with_monsters.parquet
+
+features_with_structures:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/features_with_structures.parquet
+
+features_complete:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/features_complete.parquet
+
+# ============================================================================
+# DATOS PRIMARIOS (03_primary) - Datos limpios y procesados
+# ============================================================================
+
+model_input_table:
+  type: pandas.ParquetDataset
+  filepath: data/03_primary/model_input_table.parquet
+
+# ============================================================================
+# DATOS DE FEATURES (04_feature) - Train/Test Split
+# ============================================================================
+
+X_train:
+  type: pandas.ParquetDataset
+  filepath: data/04_feature/X_train.parquet
+
+X_test:
+  type: pandas.ParquetDataset
+  filepath: data/04_feature/X_test.parquet
+
+y_reg_train:
+  type: pickle.PickleDataset
+  filepath: data/04_feature/y_reg_train.pkl
+
+y_reg_test:
+  type: pickle.PickleDataset
+  filepath: data/04_feature/y_reg_test.pkl
+
+y_cls_train:
+  type: pickle.PickleDataset
+  filepath: data/04_feature/y_cls_train.pkl
+
+y_cls_test:
+  type: pickle.PickleDataset
+  filepath: data/04_feature/y_cls_test.pkl
+
+X_train_scaled:
+  type: pandas.ParquetDataset
+  filepath: data/04_feature/X_train_scaled.parquet
+
+X_test_scaled:
+  type: pandas.ParquetDataset
+  filepath: data/04_feature/X_test_scaled.parquet
+
+# ============================================================================
+# MODELOS (06_models) - Modelos entrenados
+# ============================================================================
+
+scaler:
+  type: pickle.PickleDataset
+  filepath: data/06_models/scaler.pkl
+
+regression_models:
+  type: pickle.PickleDataset
+  filepath: data/06_models/regression_models.pkl
+
+classification_models:
+  type: pickle.PickleDataset
+  filepath: data/06_models/classification_models.pkl
+
+regression_predictions:
+  type: pickle.PickleDataset
+  filepath: data/06_models/regression_predictions.pkl
+
+classification_predictions:
+  type: pickle.PickleDataset
+  filepath: data/06_models/classification_predictions.pkl
+
+# ============================================================================
+# MÉTRICAS Y REPORTES (08_reporting)
+# ============================================================================
+
+regression_metrics:
+  type: pandas.ParquetDataset
+  filepath: data/08_reporting/regression_metrics.parquet
+
+classification_metrics:
+  type: pandas.ParquetDataset
+  filepath: data/08_reporting/classification_metrics.parquet
+
+regression_feature_importance:
+  type: pandas.ParquetDataset
+  filepath: data/08_reporting/regression_feature_importance.parquet
+
+classification_feature_importance:
+  type: pandas.ParquetDataset
+  filepath: data/08_reporting/classification_feature_importance.parquet
+
+regression_report:
+  type: json.JSONDataset
+  filepath: data/08_reporting/regression_report.json
+
+classification_report:
+  type: json.JSONDataset
+  filepath: data/08_reporting/classification_report.json
+
+# ============================================================================
+# DATOS LIMPIOS - DATA CLEANING PIPELINE (02_intermediate)
+# ============================================================================
+
+intermediate_main_data:
+  type: pandas.CSVDataset
+  filepath: data/02_intermediate/main_clean.csv
+
+intermediate_matchinfo:
+  type: pandas.CSVDataset
+  filepath: data/02_intermediate/matchinfo_clean.csv
+
+intermediate_bans:
+  type: pandas.CSVDataset
+  filepath: data/02_intermediate/bans_clean.csv
+
+intermediate_gold:
+  type: pandas.CSVDataset
+  filepath: data/02_intermediate/gold_clean.csv
+
+intermediate_kills:
+  type: pandas.CSVDataset
+  filepath: data/02_intermediate/kills_clean.csv
+
+intermediate_monsters:
+  type: pandas.CSVDataset
+  filepath: data/02_intermediate/monsters_clean.csv
+
+intermediate_structures:
+  type: pandas.CSVDataset
+  filepath: data/02_intermediate/structures_clean.csv
+
+data_quality_report:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/data_quality_report_cleaning.csv
+
+# ============================================================================
+# ANÁLISIS EXPLORATORIO - DATA EXPLORATION PIPELINE (08_reporting)
+# ============================================================================
+
+descriptive_statistics:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/descriptive_statistics.csv
+  load_args:
+    encoding: latin-1
+  save_args:
+    index: false
+    encoding: utf-8
+
+team_performance_analysis:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/team_performance_analysis.csv
+  load_args:
+    encoding: latin-1
+  save_args:
+    index: false
+    encoding: utf-8
+
+champion_bans_analysis:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/champion_bans_analysis.csv
+  load_args:
+    encoding: latin-1
+  save_args:
+    index: false
+    encoding: utf-8
+
+neutral_objectives_analysis:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/neutral_objectives_analysis.csv
+  load_args:
+    encoding: latin-1
+  save_args:
+    index: false
+    encoding: utf-8
+
+structures_analysis:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/structures_analysis.csv
+  load_args:
+    encoding: latin-1
+  save_args:
+    index: false
+    encoding: utf-8
+
+correlations_analysis:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/correlations_analysis.csv
+  load_args:
+    encoding: latin-1
+  save_args:
+    index: false
+    encoding: utf-8
+
+game_duration_analysis:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/game_duration_analysis.csv
+  load_args:
+    encoding: latin-1
+  save_args:
+    index: false
+    encoding: utf-8
+
+eda_complete_report:
+  type: json.JSONDataset
+  filepath: data/08_reporting/eda_complete_report.json

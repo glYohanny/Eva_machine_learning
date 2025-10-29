@@ -1,0 +1,33 @@
+# Dockerfile personalizado de Airflow con Kedro y dependencias
+FROM apache/airflow:2.8.0-python3.11
+
+# Cambiar a usuario root para instalar paquetes
+USER root
+
+# Instalar dependencias del sistema si son necesarias
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    build-essential && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Cambiar de vuelta al usuario airflow
+USER airflow
+
+# Copiar requirements
+COPY requirements.txt /tmp/requirements.txt
+
+# Instalar dependencias de Python incluyendo Kedro
+RUN pip install --no-cache-dir --user \
+    kedro~=0.19.0 \
+    pandas \
+    numpy \
+    scikit-learn \
+    matplotlib \
+    seaborn \
+    openpyxl \
+    pyarrow
+
+# Las dependencias ya instaladas en requirements.txt
+RUN pip install --no-cache-dir --user -r /tmp/requirements.txt || true
+

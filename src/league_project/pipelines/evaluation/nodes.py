@@ -27,15 +27,17 @@ logger = logging.getLogger(__name__)
 def evaluate_regression_models(
     predictions: Dict[str, Dict[str, np.ndarray]],
     y_train: pd.Series,
-    y_test: pd.Series
+    y_test: pd.Series,
+    cv_results: Dict[str, Dict] = None
 ) -> pd.DataFrame:
     """
-    Evalúa modelos de regresión con múltiples métricas.
+    Evalúa modelos de regresión con múltiples métricas, incluyendo CV scores.
     
     Args:
         predictions: Predicciones de todos los modelos
         y_train: Target real de entrenamiento
         y_test: Target real de test
+        cv_results: Resultados de CrossValidation (opcional)
         
     Returns:
         DataFrame con métricas de evaluación
@@ -57,7 +59,7 @@ def evaluate_regression_models(
         test_mae = mean_absolute_error(y_test, preds['test'])
         test_r2 = r2_score(y_test, preds['test'])
         
-        results.append({
+        result_dict = {
             'model': model_name,
             'train_rmse': train_rmse,
             'test_rmse': test_rmse,
@@ -65,12 +67,24 @@ def evaluate_regression_models(
             'test_mae': test_mae,
             'train_r2': train_r2,
             'test_r2': test_r2
-        })
+        }
+        
+        # Agregar CV scores si existen
+        if cv_results and model_name in cv_results:
+            cv_data = cv_results[model_name]
+            result_dict['cv_r2_mean'] = cv_data['cv_mean']
+            result_dict['cv_r2_std'] = cv_data['cv_std']
+            result_dict['best_params'] = str(cv_data['best_params'])
+        
+        results.append(result_dict)
         
         logger.info(f"\n✓ {model_name}")
         logger.info(f"   RMSE - Train: {train_rmse:.2f} | Test: {test_rmse:.2f}")
         logger.info(f"   MAE  - Train: {train_mae:.2f} | Test: {test_mae:.2f}")
         logger.info(f"   R²   - Train: {train_r2:.4f} | Test: {test_r2:.4f}")
+        if cv_results and model_name in cv_results:
+            cv_data = cv_results[model_name]
+            logger.info(f"   CV R² - Mean: {cv_data['cv_mean']:.4f} (± {cv_data['cv_std']:.4f})")
     
     df_results = pd.DataFrame(results)
     df_results = df_results.sort_values('test_r2', ascending=False)
@@ -84,15 +98,17 @@ def evaluate_regression_models(
 def evaluate_classification_models(
     predictions: Dict[str, Dict[str, np.ndarray]],
     y_train: pd.Series,
-    y_test: pd.Series
+    y_test: pd.Series,
+    cv_results: Dict[str, Dict] = None
 ) -> pd.DataFrame:
     """
-    Evalúa modelos de clasificación con múltiples métricas.
+    Evalúa modelos de clasificación con múltiples métricas, incluyendo CV scores.
     
     Args:
         predictions: Predicciones de todos los modelos
         y_train: Target real de entrenamiento
         y_test: Target real de test
+        cv_results: Resultados de CrossValidation (opcional)
         
     Returns:
         DataFrame con métricas de evaluación
@@ -114,7 +130,7 @@ def evaluate_classification_models(
         test_f1 = f1_score(y_test, preds['test_pred'])
         test_auc = roc_auc_score(y_test, preds['test_proba'])
         
-        results.append({
+        result_dict = {
             'model': model_name,
             'train_accuracy': train_acc,
             'test_accuracy': test_acc,
@@ -122,7 +138,16 @@ def evaluate_classification_models(
             'recall': test_recall,
             'f1_score': test_f1,
             'auc_roc': test_auc
-        })
+        }
+        
+        # Agregar CV scores si existen
+        if cv_results and model_name in cv_results:
+            cv_data = cv_results[model_name]
+            result_dict['cv_accuracy_mean'] = cv_data['cv_mean']
+            result_dict['cv_accuracy_std'] = cv_data['cv_std']
+            result_dict['best_params'] = str(cv_data['best_params'])
+        
+        results.append(result_dict)
         
         logger.info(f"\n✓ {model_name}")
         logger.info(f"   Accuracy  - Train: {train_acc:.4f} | Test: {test_acc:.4f}")
@@ -130,6 +155,9 @@ def evaluate_classification_models(
         logger.info(f"   Recall    - Test: {test_recall:.4f}")
         logger.info(f"   F1-Score  - Test: {test_f1:.4f}")
         logger.info(f"   AUC-ROC   - Test: {test_auc:.4f}")
+        if cv_results and model_name in cv_results:
+            cv_data = cv_results[model_name]
+            logger.info(f"   CV Accuracy - Mean: {cv_data['cv_mean']:.4f} (± {cv_data['cv_std']:.4f})")
     
     df_results = pd.DataFrame(results)
     df_results = df_results.sort_values('f1_score', ascending=False)
@@ -254,6 +282,118 @@ def create_classification_report(
     logger.info(f"   F1-Score: {report['best_f1']:.4f}")
     
     return report
+
+
+def generate_cv_comparison_table_regression(
+    metrics: pd.DataFrame,
+    cv_results: Dict[str, Dict]
+) -> pd.DataFrame:
+    """
+    Genera tabla comparativa de regresión con mean±std de CrossValidation.
+    
+    Args:
+        metrics: DataFrame con métricas de evaluación
+        cv_results: Resultados de CrossValidation
+        
+    Returns:
+        DataFrame con tabla comparativa formateada
+    """
+    logger.info("="*80)
+    logger.info("GENERANDO TABLA COMPARATIVA - REGRESIÓN (CV k=5)")
+    logger.info("="*80)
+    
+    table_data = []
+    
+    for _, row in metrics.iterrows():
+        model_name = row['model']
+        
+        if model_name in cv_results:
+            cv_data = cv_results[model_name]
+            table_data.append({
+                'Model': model_name,
+                'CV R² (mean ± std)': f"{cv_data['cv_mean']:.4f} ± {cv_data['cv_std']:.4f}",
+                'Test R²': f"{row['test_r2']:.4f}",
+                'Test RMSE': f"{row['test_rmse']:.2f}",
+                'Test MAE': f"{row['test_mae']:.2f}",
+                'Best Params': cv_data['best_params'] if cv_data['best_params'] else 'default'
+            })
+        else:
+            table_data.append({
+                'Model': model_name,
+                'CV R² (mean ± std)': 'N/A',
+                'Test R²': f"{row['test_r2']:.4f}",
+                'Test RMSE': f"{row['test_rmse']:.2f}",
+                'Test MAE': f"{row['test_mae']:.2f}",
+                'Best Params': 'N/A'
+            })
+    
+    df_table = pd.DataFrame(table_data)
+    
+    logger.info("\n" + "="*80)
+    logger.info("TABLA COMPARATIVA - MODELOS DE REGRESIÓN")
+    logger.info("="*80)
+    logger.info("\n" + df_table.to_string(index=False))
+    logger.info("="*80)
+    
+    return df_table
+
+
+def generate_cv_comparison_table_classification(
+    metrics: pd.DataFrame,
+    cv_results: Dict[str, Dict]
+) -> pd.DataFrame:
+    """
+    Genera tabla comparativa de clasificación con mean±std de CrossValidation.
+    
+    Args:
+        metrics: DataFrame con métricas de evaluación
+        cv_results: Resultados de CrossValidation
+        
+    Returns:
+        DataFrame con tabla comparativa formateada
+    """
+    logger.info("="*80)
+    logger.info("GENERANDO TABLA COMPARATIVA - CLASIFICACIÓN (CV k=5)")
+    logger.info("="*80)
+    
+    table_data = []
+    
+    for _, row in metrics.iterrows():
+        model_name = row['model']
+        
+        if model_name in cv_results:
+            cv_data = cv_results[model_name]
+            table_data.append({
+                'Model': model_name,
+                'CV Accuracy (mean ± std)': f"{cv_data['cv_mean']:.4f} ± {cv_data['cv_std']:.4f}",
+                'Test Accuracy': f"{row['test_accuracy']:.4f}",
+                'Precision': f"{row['precision']:.4f}",
+                'Recall': f"{row['recall']:.4f}",
+                'F1-Score': f"{row['f1_score']:.4f}",
+                'AUC-ROC': f"{row['auc_roc']:.4f}",
+                'Best Params': cv_data['best_params'] if cv_data['best_params'] else 'default'
+            })
+        else:
+            table_data.append({
+                'Model': model_name,
+                'CV Accuracy (mean ± std)': 'N/A',
+                'Test Accuracy': f"{row['test_accuracy']:.4f}",
+                'Precision': f"{row['precision']:.4f}",
+                'Recall': f"{row['recall']:.4f}",
+                'F1-Score': f"{row['f1_score']:.4f}",
+                'AUC-ROC': f"{row['auc_roc']:.4f}",
+                'Best Params': 'N/A'
+            })
+    
+    df_table = pd.DataFrame(table_data)
+    
+    logger.info("\n" + "="*80)
+    logger.info("TABLA COMPARATIVA - MODELOS DE CLASIFICACIÓN")
+    logger.info("="*80)
+    logger.info("\n" + df_table.to_string(index=False))
+    logger.info("="*80)
+    
+    return df_table
 
 
 

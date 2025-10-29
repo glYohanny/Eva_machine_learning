@@ -9,6 +9,9 @@ kedro[jupyter]~=1.0.0
 kedro-datasets>=3.0
 kedro-viz>=6.7.0
 
+# DVC - Data Version Control
+dvc>=3.0.0
+
 # Data manipulation
 pandas>=2.0.0
 numpy>=1.24.0

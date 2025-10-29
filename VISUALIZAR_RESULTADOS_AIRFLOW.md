@@ -634,3 +634,4 @@ docker-compose logs -f airflow-webserver
 **Última actualización:** Octubre 29, 2025  
 **Autor:** Pedro Torres
 
+

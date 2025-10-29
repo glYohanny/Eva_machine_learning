@@ -146,6 +146,15 @@ classification_predictions:
   type: pickle.PickleDataset
   filepath: data/06_models/classification_predictions.pkl
 
+# Resultados de CrossValidation (GridSearchCV + CV k=5)
+regression_cv_results:
+  type: json.JSONDataset
+  filepath: data/08_reporting/regression_cv_results.json
+
+classification_cv_results:
+  type: json.JSONDataset
+  filepath: data/08_reporting/classification_cv_results.json
+
 # ============================================================================
 # MÉTRICAS Y REPORTES (08_reporting)
 # ============================================================================
@@ -173,6 +182,19 @@ regression_report:
 classification_report:
   type: json.JSONDataset
   filepath: data/08_reporting/classification_report.json
+
+# Tablas comparativas con CV (mean±std)
+regression_cv_comparison_table:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/regression_cv_comparison_table.csv
+  save_args:
+    index: false
+
+classification_cv_comparison_table:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/classification_cv_comparison_table.csv
+  save_args:
+    index: false
 
 # ============================================================================
 # DATOS LIMPIOS - DATA CLEANING PIPELINE (02_intermediate)

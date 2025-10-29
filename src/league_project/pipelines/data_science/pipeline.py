@@ -13,18 +13,18 @@ from .nodes import (
 
 def create_pipeline(**kwargs) -> Pipeline:
     """
-    Crea el pipeline de data science.
+    Crea el pipeline de data science con GridSearchCV y CrossValidation.
     
     Returns:
-        Pipeline de Kedro con entrenamiento de modelos
+        Pipeline de Kedro con entrenamiento de modelos optimizados
     """
     return pipeline(
         [
-            # Regresión
+            # Regresión con GridSearchCV + CV
             node(
                 func=train_regression_models,
                 inputs=["X_train_scaled", "y_reg_train", "params:model_options"],
-                outputs="regression_models",
+                outputs=["regression_models", "regression_cv_results"],
                 name="train_regression_models_node",
             ),
             node(
@@ -33,11 +33,11 @@ def create_pipeline(**kwargs) -> Pipeline:
                 outputs="regression_predictions",
                 name="make_regression_predictions_node",
             ),
-            # Clasificación
+            # Clasificación con GridSearchCV + CV
             node(
                 func=train_classification_models,
                 inputs=["X_train_scaled", "y_cls_train", "params:model_options"],
-                outputs="classification_models",
+                outputs=["classification_models", "classification_cv_results"],
                 name="train_classification_models_node",
             ),
             node(

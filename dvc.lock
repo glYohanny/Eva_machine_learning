@@ -1,0 +1,339 @@
+schema: '2.0'
+stages:
+  data_cleaning:
+    cmd: kedro run --pipeline data_cleaning
+    deps:
+    - path: data/01_raw/LeagueofLegends.csv
+      hash: md5
+      md5: 3efb0f609faf04108d4a6b31eb9bfc4a
+      size: 46924413
+    - path: data/01_raw/bans.csv
+      hash: md5
+      md5: a51c7fdb9649055d581af9a130f384d6
+      size: 2159571
+    - path: data/01_raw/gold.csv
+      hash: md5
+      md5: 5061e9db3c4f468ab8862e1b434c1ed3
+      size: 36368635
+    - path: data/01_raw/kills.csv
+      hash: md5
+      md5: 4ad5970993c76a4cc715940d1d330aa8
+      size: 33961653
+    - path: data/01_raw/matchinfo.csv
+      hash: md5
+      md5: 0887491799d11e51af908aad7e08bd47
+      size: 2146150
+    - path: data/01_raw/monsters.csv
+      hash: md5
+      md5: 94c9649bcca3f3eebfc26554dccbb320
+      size: 5821457
+    - path: data/01_raw/structures.csv
+      hash: md5
+      md5: ad88fbd61a51eb454c8961ea74d161ad
+      size: 16949611
+    - path: src/league_project/pipelines/data_cleaning
+      hash: md5
+      md5: e0a683d720fa53fb4286dae3ba9fe395.dir
+      size: 71084
+      nfiles: 9
+    outs:
+    - path: data/02_intermediate/bans_clean.csv
+      hash: md5
+      md5: bb8ee4bc6dac29aada7c17f1e930553a
+      size: 2174812
+    - path: data/02_intermediate/gold_clean.csv
+      hash: md5
+      md5: a43f20253ac23f7fde5d9e5711eefc6c
+      size: 40432592
+    - path: data/02_intermediate/kills_clean.csv
+      hash: md5
+      md5: ac5127a49653e3ccf903290ec5e70f8a
+      size: 34115356
+    - path: data/02_intermediate/main_clean.csv
+      hash: md5
+      md5: 20a6f173d24222dd39ddda13aa19d36d
+      size: 47041771
+    - path: data/02_intermediate/matchinfo_clean.csv
+      hash: md5
+      md5: 3146ef0480a3506dc3fa8158a24ab5ed
+      size: 2153771
+    - path: data/02_intermediate/monsters_clean.csv
+      hash: md5
+      md5: 180edf08f19917c9686853edd49324da
+      size: 5865706
+    - path: data/02_intermediate/structures_clean.csv
+      hash: md5
+      md5: 29f70725ca0813c8d4e18693c9e7d8d9
+      size: 16180672
+  data_exploration:
+    cmd: kedro run --pipeline eda
+    deps:
+    - path: data/02_intermediate/bans_clean.csv
+      hash: md5
+      md5: bb8ee4bc6dac29aada7c17f1e930553a
+      size: 2174812
+    - path: data/02_intermediate/main_clean.csv
+      hash: md5
+      md5: 20a6f173d24222dd39ddda13aa19d36d
+      size: 47041771
+    - path: data/02_intermediate/matchinfo_clean.csv
+      hash: md5
+      md5: 3146ef0480a3506dc3fa8158a24ab5ed
+      size: 2153771
+    - path: data/02_intermediate/monsters_clean.csv
+      hash: md5
+      md5: 180edf08f19917c9686853edd49324da
+      size: 5865706
+    - path: data/02_intermediate/structures_clean.csv
+      hash: md5
+      md5: 29f70725ca0813c8d4e18693c9e7d8d9
+      size: 16180672
+    - path: src/league_project/pipelines/data_exploration
+      hash: md5
+      md5: ddffd939a445481f1ecd03df52421907.dir
+      size: 73649
+      nfiles: 9
+    outs:
+    - path: data/08_reporting/champion_bans_analysis.csv
+      hash: md5
+      md5: c0ec44f719d883ffe6a3c7ee8b3aad6f
+      size: 3646
+    - path: data/08_reporting/correlations_analysis.csv
+      hash: md5
+      md5: 179b1dfd3bd32ae4e2b23d8845c958eb
+      size: 629
+    - path: data/08_reporting/descriptive_statistics.csv
+      hash: md5
+      md5: d4c42b05f25c1fb961b64a8d2f639eb2
+      size: 455
+    - path: data/08_reporting/eda_complete_report.json
+      hash: md5
+      md5: 8cf8f51964cb6f37b702fbb4a0a4d11f
+      size: 441
+    - path: data/08_reporting/game_duration_analysis.csv
+      hash: md5
+      md5: 88443cb35d59a0b55ed0b4788dbd6cfd
+      size: 303
+    - path: data/08_reporting/neutral_objectives_analysis.csv
+      hash: md5
+      md5: 7a72747cf22ba739b42d643095852aaf
+      size: 618
+    - path: data/08_reporting/structures_analysis.csv
+      hash: md5
+      md5: 6625d0cd84e655d9de41fa6fc200cb32
+      size: 484
+    - path: data/08_reporting/team_performance_analysis.csv
+      hash: md5
+      md5: 3b0fd7d6e44ca7939ae2c37787f7c0fe
+      size: 6036
+  feature_engineering:
+    cmd: kedro run --pipeline data_processing
+    deps:
+    - path: data/02_intermediate/kills_clean.csv
+      hash: md5
+      md5: ac5127a49653e3ccf903290ec5e70f8a
+      size: 34115356
+    - path: data/02_intermediate/main_clean.csv
+      hash: md5
+      md5: 20a6f173d24222dd39ddda13aa19d36d
+      size: 47041771
+    - path: data/02_intermediate/monsters_clean.csv
+      hash: md5
+      md5: 180edf08f19917c9686853edd49324da
+      size: 5865706
+    - path: data/02_intermediate/structures_clean.csv
+      hash: md5
+      md5: 29f70725ca0813c8d4e18693c9e7d8d9
+      size: 16180672
+    - path: src/league_project/pipelines/data_processing
+      hash: md5
+      md5: d43f51d404bdc161df8cecc3167deae1.dir
+      size: 46222
+      nfiles: 9
+    outs:
+    - path: data/02_intermediate/features_complete.parquet
+      hash: md5
+      md5: b31d949dbdc99e202436eaac426a22a8
+      size: 608091
+    - path: data/02_intermediate/features_with_kills.parquet
+      hash: md5
+      md5: 3b48514631e98baeb7043f7eb58278d3
+      size: 459697
+    - path: data/02_intermediate/features_with_monsters.parquet
+      hash: md5
+      md5: 135a3e0130ee2c5cc8599b2c329d30db
+      size: 483596
+    - path: data/02_intermediate/features_with_structures.parquet
+      hash: md5
+      md5: 219032bcc3f283ac90e6430591b566fa
+      size: 510746
+    - path: data/03_primary/model_input_table.parquet
+      hash: md5
+      md5: 231dfbcec45cbdfa8dfa283960f82a6e
+      size: 177150
+    - path: data/04_feature/X_test.parquet
+      hash: md5
+      md5: 1be84ec06d89a077fec1b223582843a4
+      size: 56713
+    - path: data/04_feature/X_test_scaled.parquet
+      hash: md5
+      md5: ece0c7f4048e108f57ec47b2aa863f39
+      size: 73318
+    - path: data/04_feature/X_train.parquet
+      hash: md5
+      md5: abdc13fe7dcee65b55f1f1ccf2a37357
+      size: 176632
+    - path: data/04_feature/X_train_scaled.parquet
+      hash: md5
+      md5: bb9166905464488168e388f83309af32
+      size: 225609
+    - path: data/04_feature/y_cls_test.pkl
+      hash: md5
+      md5: e723ef461a22ed145d01fd47474cf40c
+      size: 37204
+    - path: data/04_feature/y_cls_train.pkl
+      hash: md5
+      md5: fec7d2360ac1372c76178b01762b7a60
+      size: 146941
+    - path: data/04_feature/y_reg_test.pkl
+      hash: md5
+      md5: 2b041d6f1bc827509905f55dd55f604d
+      size: 37207
+    - path: data/04_feature/y_reg_train.pkl
+      hash: md5
+      md5: 7ddce0d81af2815d843fb380bba9eb25
+      size: 146944
+    - path: data/06_models/scaler.pkl
+      hash: md5
+      md5: b3dd860636a479f028f25c924295d889
+      size: 1214
+  model_training:
+    cmd: kedro run --pipeline data_science
+    deps:
+    - path: data/04_feature/X_test_scaled.parquet
+      hash: md5
+      md5: ece0c7f4048e108f57ec47b2aa863f39
+      size: 73318
+    - path: data/04_feature/X_train_scaled.parquet
+      hash: md5
+      md5: bb9166905464488168e388f83309af32
+      size: 225609
+    - path: data/04_feature/y_cls_train.pkl
+      hash: md5
+      md5: fec7d2360ac1372c76178b01762b7a60
+      size: 146941
+    - path: data/04_feature/y_reg_train.pkl
+      hash: md5
+      md5: 7ddce0d81af2815d843fb380bba9eb25
+      size: 146944
+    - path: src/league_project/pipelines/data_science
+      hash: md5
+      md5: 5a67e98d94e6910ef6040f088181872e.dir
+      size: 36948
+      nfiles: 9
+    outs:
+    - path: data/06_models/classification_models.pkl
+      hash: md5
+      md5: b12d21a316e3c49dbc3ec988bbee34c5
+      size: 2177036
+    - path: data/06_models/classification_predictions.pkl
+      hash: md5
+      md5: 8dccba9f92c80e9f66f6cd06162e4987
+      size: 610706
+    - path: data/06_models/regression_models.pkl
+      hash: md5
+      md5: 361d6eb8fa440bd920fb9504a737bb2d
+      size: 19736004
+    - path: data/06_models/regression_predictions.pkl
+      hash: md5
+      md5: 26304a6b4f40814eba62255becfd2ff3
+      size: 305412
+    - path: data/08_reporting/classification_cv_results.json
+      hash: md5
+      md5: 1dbf4df73c65953270281c33f6d27380
+      size: 1749
+    - path: data/08_reporting/regression_cv_results.json
+      hash: md5
+      md5: 7614b73a86562363c214c57d92b4531b
+      size: 1700
+  model_evaluation:
+    cmd: kedro run --pipeline evaluation
+    deps:
+    - path: data/04_feature/y_cls_test.pkl
+      hash: md5
+      md5: e723ef461a22ed145d01fd47474cf40c
+      size: 37204
+    - path: data/04_feature/y_cls_train.pkl
+      hash: md5
+      md5: fec7d2360ac1372c76178b01762b7a60
+      size: 146941
+    - path: data/04_feature/y_reg_test.pkl
+      hash: md5
+      md5: 2b041d6f1bc827509905f55dd55f604d
+      size: 37207
+    - path: data/04_feature/y_reg_train.pkl
+      hash: md5
+      md5: 7ddce0d81af2815d843fb380bba9eb25
+      size: 146944
+    - path: data/06_models/classification_models.pkl
+      hash: md5
+      md5: b12d21a316e3c49dbc3ec988bbee34c5
+      size: 2177036
+    - path: data/06_models/classification_predictions.pkl
+      hash: md5
+      md5: 8dccba9f92c80e9f66f6cd06162e4987
+      size: 610706
+    - path: data/06_models/regression_models.pkl
+      hash: md5
+      md5: 361d6eb8fa440bd920fb9504a737bb2d
+      size: 19736004
+    - path: data/06_models/regression_predictions.pkl
+      hash: md5
+      md5: 26304a6b4f40814eba62255becfd2ff3
+      size: 305412
+    - path: data/08_reporting/classification_cv_results.json
+      hash: md5
+      md5: 1dbf4df73c65953270281c33f6d27380
+      size: 1749
+    - path: data/08_reporting/regression_cv_results.json
+      hash: md5
+      md5: 7614b73a86562363c214c57d92b4531b
+      size: 1700
+    - path: src/league_project/pipelines/evaluation
+      hash: md5
+      md5: 98ef87ec97eee01f977396f938164dc4.dir
+      size: 48866
+      nfiles: 9
+    outs:
+    - path: data/08_reporting/classification_cv_comparison_table.csv
+      hash: md5
+      md5: 34c12af1c49019571f63d46377b48228
+      size: 664
+    - path: data/08_reporting/classification_feature_importance.parquet
+      hash: md5
+      md5: 5d394221090d4c4403c4afd7f9e0ad39
+      size: 3235
+    - path: data/08_reporting/classification_metrics.parquet
+      hash: md5
+      md5: 42377079b80d481e4e3059eaff344e74
+      size: 8017
+    - path: data/08_reporting/classification_report.json
+      hash: md5
+      md5: 7b5563deaf8337c79203bfd23469d7bd
+      size: 2549
+    - path: data/08_reporting/regression_cv_comparison_table.csv
+      hash: md5
+      md5: 88d6bc776a4294d233fca9231c590761
+      size: 516
+    - path: data/08_reporting/regression_feature_importance.parquet
+      hash: md5
+      md5: 34b1d9303b6755115785cdfbff4e6387
+      size: 3235
+    - path: data/08_reporting/regression_metrics.parquet
+      hash: md5
+      md5: 9006b7f66cb2c83324d7bc8c8025a5e1
+      size: 7818
+    - path: data/08_reporting/regression_report.json
+      hash: md5
+      md5: d393acab9f779a3fba440a0ab0d1b4a6
+      size: 2432

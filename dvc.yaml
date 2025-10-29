@@ -1,0 +1,130 @@
+# DVC Pipeline - League of Legends ML Project
+# Define stages del pipeline con sus dependencias, outputs y métricas
+
+stages:
+  # ============================================================================
+  # STAGE 1: Data Cleaning
+  # ============================================================================
+  data_cleaning:
+    cmd: kedro run --pipeline data_cleaning
+    deps:
+      - data/01_raw/LeagueofLegends.csv
+      - data/01_raw/matchinfo.csv
+      - data/01_raw/kills.csv
+      - data/01_raw/gold.csv
+      - data/01_raw/bans.csv
+      - data/01_raw/monsters.csv
+      - data/01_raw/structures.csv
+      - src/league_project/pipelines/data_cleaning
+    outs:
+      - data/02_intermediate/main_clean.csv
+      - data/02_intermediate/matchinfo_clean.csv
+      - data/02_intermediate/kills_clean.csv
+      - data/02_intermediate/gold_clean.csv
+      - data/02_intermediate/bans_clean.csv
+      - data/02_intermediate/monsters_clean.csv
+      - data/02_intermediate/structures_clean.csv
+
+  # ============================================================================
+  # STAGE 2: Exploratory Data Analysis (EDA)
+  # ============================================================================
+  data_exploration:
+    cmd: kedro run --pipeline eda
+    deps:
+      - data/02_intermediate/main_clean.csv
+      - data/02_intermediate/matchinfo_clean.csv
+      - data/02_intermediate/bans_clean.csv
+      - data/02_intermediate/monsters_clean.csv
+      - data/02_intermediate/structures_clean.csv
+      - src/league_project/pipelines/data_exploration
+    outs:
+      - data/08_reporting/descriptive_statistics.csv
+      - data/08_reporting/team_performance_analysis.csv
+      - data/08_reporting/champion_bans_analysis.csv
+      - data/08_reporting/neutral_objectives_analysis.csv
+      - data/08_reporting/structures_analysis.csv
+      - data/08_reporting/correlations_analysis.csv
+      - data/08_reporting/game_duration_analysis.csv
+    metrics:
+      - data/08_reporting/eda_complete_report.json:
+          cache: false
+
+  # ============================================================================
+  # STAGE 3: Feature Engineering
+  # ============================================================================
+  feature_engineering:
+    cmd: kedro run --pipeline data_processing
+    deps:
+      - data/02_intermediate/main_clean.csv
+      - data/02_intermediate/kills_clean.csv
+      - data/02_intermediate/monsters_clean.csv
+      - data/02_intermediate/structures_clean.csv
+      - src/league_project/pipelines/data_processing
+    outs:
+      - data/02_intermediate/features_with_kills.parquet
+      - data/02_intermediate/features_with_monsters.parquet
+      - data/02_intermediate/features_with_structures.parquet
+      - data/02_intermediate/features_complete.parquet
+      - data/03_primary/model_input_table.parquet
+      - data/04_feature/X_train.parquet
+      - data/04_feature/X_test.parquet
+      - data/04_feature/y_reg_train.pkl
+      - data/04_feature/y_reg_test.pkl
+      - data/04_feature/y_cls_train.pkl
+      - data/04_feature/y_cls_test.pkl
+      - data/04_feature/X_train_scaled.parquet
+      - data/04_feature/X_test_scaled.parquet
+      - data/06_models/scaler.pkl
+
+  # ============================================================================
+  # STAGE 4: Model Training (con GridSearchCV + CV k=5)
+  # ============================================================================
+  model_training:
+    cmd: kedro run --pipeline data_science
+    deps:
+      - data/04_feature/X_train_scaled.parquet
+      - data/04_feature/X_test_scaled.parquet
+      - data/04_feature/y_reg_train.pkl
+      - data/04_feature/y_cls_train.pkl
+      - src/league_project/pipelines/data_science
+    outs:
+      - data/06_models/regression_models.pkl
+      - data/06_models/classification_models.pkl
+      - data/06_models/regression_predictions.pkl
+      - data/06_models/classification_predictions.pkl
+    metrics:
+      - data/08_reporting/regression_cv_results.json:
+          cache: false
+      - data/08_reporting/classification_cv_results.json:
+          cache: false
+
+  # ============================================================================
+  # STAGE 5: Model Evaluation
+  # ============================================================================
+  model_evaluation:
+    cmd: kedro run --pipeline evaluation
+    deps:
+      - data/06_models/regression_models.pkl
+      - data/06_models/classification_models.pkl
+      - data/06_models/regression_predictions.pkl
+      - data/06_models/classification_predictions.pkl
+      - data/04_feature/y_reg_train.pkl
+      - data/04_feature/y_reg_test.pkl
+      - data/04_feature/y_cls_train.pkl
+      - data/04_feature/y_cls_test.pkl
+      - data/08_reporting/regression_cv_results.json
+      - data/08_reporting/classification_cv_results.json
+      - src/league_project/pipelines/evaluation
+    outs:
+      - data/08_reporting/regression_metrics.parquet
+      - data/08_reporting/classification_metrics.parquet
+      - data/08_reporting/regression_feature_importance.parquet
+      - data/08_reporting/classification_feature_importance.parquet
+      - data/08_reporting/regression_cv_comparison_table.csv
+      - data/08_reporting/classification_cv_comparison_table.csv
+    metrics:
+      - data/08_reporting/regression_report.json:
+          cache: false
+      - data/08_reporting/classification_report.json:
+          cache: false
+

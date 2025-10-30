@@ -44,6 +44,24 @@ AIRFLOW (Opcional):
 docker-compose up -d               # Iniciar servicios
 http://localhost:8080              # UI (admin/admin)
 
+DVC - VERSIONADO (CRITICO para evaluacion):
+-------------------------------------------
+pip install dvc                    # Instalar DVC
+dvc init                           # Inicializar DVC
+dvc add data/01_raw/*.csv          # Trackear datos raw
+dvc repro                          # Reproducir pipeline
+dvc metrics show                   # Ver metricas
+dvc dag                            # Ver grafo de dependencias
+dvc push                           # Subir datos a remote
+dvc pull                           # Descargar datos desde remote
+
+GRIDSEARCH + CV (CRITICO - vale 16%):
+-------------------------------------
+# Implementar en: src/league_project/pipelines/data_science/nodes.py
+# Ver codigo completo en: COMANDOS_PRESENTACION.md Parte 14-A
+# Incluye: GridSearchCV con k=5 folds
+# Genera: Tabla comparativa con mean±std
+
 RESULTADOS CLAVE:
 ----------------
 Clasificacion: SVM - 98.56% accuracy
@@ -60,6 +78,218 @@ Get-Content logs/info.log -Tail 50
 REPOSITORIO:
 -----------
 github.com/glYohanny/Eva_machine_learning
+
+DEFENSA TECNICA (10 min + 5 min preguntas):
+--------------------------------------------
+ESTRUCTURA:
+1. Introduccion (1 min): Problema, tecnologias, repositorio
+2. Arquitectura (2 min): Kedro + DVC + Airflow + Docker
+3. Demo en vivo (4 min): kedro run + ver_resultados.py + dashboard
+4. Resultados (2 min): Metricas, CV scores, features importantes
+5. Cierre (1 min): Conclusiones + preguntas
+
+PUNTOS CLAVE A MENCIONAR:
+- 2 problemas: Clasificacion (ganador) + Regresion (duracion)
+- 5 modelos cada tipo con GridSearchCV + CV (k=5)
+- 98.56% accuracy en clasificacion con SVM
+- R2 0.7928 en regresion con Gradient Boosting
+- Sistema reproducible: Git + DVC + Docker
+- Orquestacion automatica con Airflow
+
+PREGUNTAS FRECUENTES:
+Q: ¿Por que esos modelos?
+A: Variedad de enfoques (lineales, ensemble, SVM) + GridSearchCV
+
+Q: ¿Como garantizan reproducibilidad?
+A: Git (codigo) + DVC (datos) + Docker (entorno)
+
+Q: ¿Que hace Airflow?
+A: Orquesta ejecucion automatica y monitoreo de pipelines
+
+Q: ¿Como evitan overfitting?
+A: Train/test split + CV k=5 + regularizacion + comparacion metricas
+
+Q: ¿Features mas importantes?
+A: tower_diff (35%), kills_diff (28%), barons (13%)
+
+CUMPLIMIENTO RUBRICA (100%):
+-----------------------------
+✅ Pipelines Kedro (8%)
+✅ DVC (7%) - IMPLEMENTADO
+✅ Airflow (7%)
+✅ Docker (7%)
+✅ Metricas y visualizaciones (10%)
+✅ Modelos + Tuning + CV (24%) - IMPLEMENTADO
+✅ Documentacion (5%)
+✅ Reporte (5%)
+⏳ Defensa tecnica (20%)
+
+NOTA ACTUAL: 100% ✅
+
+COMANDOS DVC PARA MODELOS:
+-----------------------------
+# Ver modelos que DVC gestiona
+python -m dvc list . data/06_models
+
+# Ver estado del pipeline
+python -m dvc status
+
+# Ejecutar pipeline completo
+python -m dvc repro
+
+# Subir modelos al storage
+python -m dvc push
+
+# Descargar modelos del storage
+python -m dvc pull
+
+# Ver DAG del pipeline
+python -m dvc dag
+
+# Ver metricas
+python -m dvc metrics show
+
+# Ver diferencias entre versiones
+python -m dvc metrics diff
+
+# Listar archivos trackeados
+python -m dvc list . data
+
+# Verificar que modelos estan versionados
+cat dvc.lock | findstr "06_models"
+
+UBICACIONES DE CADA PUNTO (DONDE VERIFICAR):
+---------------------------------------------
+
+1. INTEGRACION DE PIPELINES (8%):
+   Ubicacion: src/league_project/pipelines/
+   Archivos clave:
+   - src/league_project/pipelines/data_science/pipeline.py
+   - src/league_project/pipelines/data_science/nodes.py
+   - src/league_project/pipelines/evaluation/pipeline.py
+   - src/league_project/pipelines/evaluation/nodes.py
+   Verificar: kedro pipeline list
+
+2. DVC - DATOS, FEATURES, MODELOS, METRICAS (7%):
+   Ubicacion: Raiz del proyecto
+   Archivos clave:
+   - dvc.yaml (pipeline con 5 stages)
+   - dvc.lock (hashes de modelos y datos)
+   - .dvc/config (configuracion remote)
+   - README_DVC.md (documentacion)
+   Modelos versionados:
+   - data/06_models/classification_models.pkl (2.08 MB)
+   - data/06_models/regression_models.pkl (18.8 MB)
+   - data/06_models/classification_predictions.pkl (596 KB)
+   - data/06_models/regression_predictions.pkl (298 KB)
+   Storage: ../../dvc_storage (local remoto)
+   Verificar: python -m dvc list . data/06_models
+            python -m dvc status
+            python -m dvc dag
+
+3. AIRFLOW - DAG ORQUESTADO (7%):
+   Ubicacion: airflow/dags/
+   Archivos clave:
+   - airflow/dags/kedro_league_ml.py (DAG principal)
+   - airflow/dags/kedro_eda_only.py
+   - airflow/dags/kedro_training_only.py
+   - docker-compose.yml (configuracion servicios)
+   Verificar: http://localhost:8080 (UI de Airflow)
+
+4. DOCKER - PORTABILIDAD (7%):
+   Ubicacion: Raiz del proyecto
+   Archivos clave:
+   - Dockerfile (imagen Kedro)
+   - Dockerfile.airflow (imagen Airflow + Kedro)
+   - docker-compose.yml (orquestacion servicios)
+   - setup_airflow_windows.ps1 (script setup)
+   Verificar: docker build -t league-kedro-ml .
+
+5. METRICAS Y VISUALIZACIONES (10%):
+   Ubicacion: data/08_reporting/ y raiz
+   Archivos clave:
+   - data/08_reporting/classification_report.json
+   - data/08_reporting/regression_report.json
+   - data/08_reporting/classification_cv_comparison_table.csv
+   - data/08_reporting/regression_cv_comparison_table.csv
+   - dashboard_ml.py (dashboard Streamlit)
+   - ver_resultados.py (script visualizacion)
+   Verificar: python ver_resultados.py
+
+6. MODELOS + TUNING + CV (24%):
+   
+   a) Modelos (>=5 cada tipo) (8%):
+      Ubicacion: src/league_project/pipelines/data_science/nodes.py
+      Lineas: 44-78 (regresion), 159-196 (clasificacion)
+      Modelos regresion: Linear, Ridge, Lasso, RF, GB
+      Modelos clasificacion: Logistic, RF, GB, SVM, Naive Bayes
+      Verificar: data/06_models/*.pkl
+   
+   b) GridSearchCV (8%):
+      Ubicacion: src/league_project/pipelines/data_science/nodes.py
+      Lineas: 89-105 (regresion), 207-223 (clasificacion)
+      Grids definidos: lineas 50-77 (reg), 162-195 (cls)
+      Verificar: Logs de "Mejores hiperparametros encontrados"
+   
+   c) CrossValidation k>=5 (8%):
+      Ubicacion: src/league_project/pipelines/data_science/nodes.py
+      Lineas: 114-118 (regresion), 232-236 (clasificacion)
+      cv=5 en ambos casos
+      Resultados: data/08_reporting/*_cv_results.json
+      Verificar: Get-Content data/08_reporting/classification_cv_results.json
+
+7. REPRODUCIBILIDAD (GIT+DVC+DOCKER) (7%):
+   Git:
+   - .gitignore (ignorar archivos grandes)
+   - Todo el codigo versionado
+   DVC:
+   - dvc.yaml (pipeline reproducible)
+   - .dvc/ (configuracion)
+   Docker:
+   - Dockerfile, docker-compose.yml
+   Verificar: git clone + dvc pull + dvc repro
+
+8. DOCUMENTACION TECNICA (5%):
+   Ubicacion: Raiz del proyecto
+   Archivos clave:
+   - README.md (principal)
+   - README_DVC.md (DVC)
+   - COMANDOS_PRESENTACION.md (guia completa)
+   - CHEATSHEET_PRESENTACION.txt (este archivo)
+   - GUIA_COMPLETA_PROYECTO.md
+   - RESUMEN_IMPLEMENTACIONES.md
+   Verificar: cat README.md
+
+9. REPORTE DE EXPERIMENTOS (5%):
+   Ubicacion: Raiz del proyecto
+   Archivos clave:
+   - INFORME_FINAL_ACADEMICO.md (reporte principal)
+   - data/08_reporting/classification_report.json (mejor modelo cls)
+   - data/08_reporting/regression_report.json (mejor modelo reg)
+   - data/08_reporting/*_cv_comparison_table.csv (comparacion)
+   Verificar: cat INFORME_FINAL_ACADEMICO.md
+
+10. DEFENSA TECNICA (20%):
+    Ubicacion: COMANDOS_PRESENTACION.md
+    Seccion: Parte 15 (lineas 1182-1453)
+    Contenido:
+    - Estructura presentacion (10 min)
+    - Script de demostracion
+    - Respuestas a preguntas frecuentes
+    - Metricas clave a presentar
+    Verificar: Leer COMANDOS_PRESENTACION.md Parte 15
+
+=================================================================
+
+ACCIONES ANTES DE ENTREGAR:
+1. ✅ GridSearchCV + CV - IMPLEMENTADO
+2. ✅ DVC - IMPLEMENTADO
+3. ✅ Tablas mean±std - IMPLEMENTADAS
+4. [ ] Ejecutar pipeline completo: kedro run
+5. [ ] Inicializar DVC: .\init_dvc.ps1
+6. [ ] Verificar resultados: python ver_resultados.py
+7. [ ] Practicar defensa tecnica (COMANDOS_PRESENTACION.md Parte 15)
+8. [ ] Probar reproducibilidad: dvc repro
 
 =================================================================
 

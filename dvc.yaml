@@ -77,7 +77,55 @@ stages:
       - data/06_models/scaler.pkl
 
   # ============================================================================
-  # STAGE 4: Model Training (con GridSearchCV + CV k=5)
+  # STAGE 4: Unsupervised Learning (Clustering, Dimensionality Reduction, Anomaly Detection)
+  # ============================================================================
+  unsupervised_learning:
+    cmd: kedro run --pipeline unsupervised_learning
+    deps:
+      - data/04_feature/X_train_scaled.parquet
+      - data/04_feature/X_test_scaled.parquet
+      - src/league_project/pipelines/unsupervised_learning
+    outs:
+      - data/06_models/kmeans_model.pkl
+      - data/06_models/dbscan_model.pkl
+      - data/06_models/hierarchical_model.pkl
+      - data/06_models/gmm_model.pkl
+      - data/06_models/pca_model.pkl
+      - data/06_models/tsne_model.pkl
+      - data/06_models/umap_model.pkl
+      - data/06_models/isolation_forest_model.pkl
+      - data/06_models/lof_model.pkl
+      - data/07_model_output/kmeans_labels.pkl
+      - data/07_model_output/dbscan_labels.pkl
+      - data/07_model_output/hierarchical_labels.pkl
+      - data/07_model_output/gmm_labels.pkl
+      - data/07_model_output/X_pca.parquet
+      - data/07_model_output/X_tsne.parquet
+      - data/07_model_output/X_umap.parquet
+      - data/04_feature/X_train_with_clusters.parquet
+      - data/04_feature/X_test_with_clusters.parquet
+    metrics:
+      - data/08_reporting/kmeans_metrics.json:
+          cache: false
+      - data/08_reporting/dbscan_metrics.json:
+          cache: false
+      - data/08_reporting/hierarchical_metrics.json:
+          cache: false
+      - data/08_reporting/gmm_metrics.json:
+          cache: false
+      - data/08_reporting/pca_metrics.json:
+          cache: false
+      - data/08_reporting/tsne_metrics.json:
+          cache: false
+      - data/08_reporting/umap_metrics.json:
+          cache: false
+      - data/08_reporting/isolation_forest_metrics.json:
+          cache: false
+      - data/08_reporting/lof_metrics.json:
+          cache: false
+
+  # ============================================================================
+  # STAGE 5: Model Training (con GridSearchCV + CV k=5)
   # ============================================================================
   model_training:
     cmd: kedro run --pipeline data_science
@@ -99,7 +147,7 @@ stages:
           cache: false
 
   # ============================================================================
-  # STAGE 5: Model Evaluation
+  # STAGE 6: Model Evaluation
   # ============================================================================
   model_evaluation:
     cmd: kedro run --pipeline evaluation

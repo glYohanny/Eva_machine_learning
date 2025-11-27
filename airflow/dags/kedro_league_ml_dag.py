@@ -55,7 +55,14 @@ data_processing_task = BashOperator(
     dag=dag,
 )
 
-# Task 4: Model Training (Data Science)
+# Task 4: Unsupervised Learning (Clustering, Dimensionality Reduction, Anomaly Detection)
+unsupervised_learning_task = BashOperator(
+    task_id='unsupervised_learning',
+    bash_command='cd /opt/airflow/kedro_project && python -m kedro run --pipeline unsupervised_learning',
+    dag=dag,
+)
+
+# Task 5: Model Training (Data Science)
 model_training_task = BashOperator(
     task_id='model_training',
     bash_command='cd /opt/airflow/kedro_project && python -m kedro run --pipeline data_science',
@@ -98,7 +105,8 @@ final_report_task = PythonOperator(
 # Flujo lineal del pipeline
 data_cleaning_task >> data_exploration_task
 data_exploration_task >> data_processing_task
-data_processing_task >> model_training_task
+data_processing_task >> unsupervised_learning_task
+unsupervised_learning_task >> model_training_task
 model_training_task >> model_evaluation_task
 model_evaluation_task >> final_report_task
 

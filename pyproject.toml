@@ -54,7 +54,7 @@ namespaces = false
 package_name = "league_project"
 project_name = "League_project"
 kedro_init_version = "1.0.0"
-tools = "['Linting', 'Testing', 'Custom Logging', 'Documentation', 'Data Structure', 'PySpark']"
+tools = "['Linting', 'Testing', 'Custom Logging', 'Documentation', 'Data Structure']"
 example_pipeline = "False"
 source_dir = "src"
 

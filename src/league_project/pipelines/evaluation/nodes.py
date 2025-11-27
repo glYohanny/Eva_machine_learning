@@ -5,7 +5,7 @@ Métricas y visualizaciones de modelos.
 
 import pandas as pd
 import numpy as np
-from typing import Dict, Any
+from typing import Dict, Any, Tuple
 import logging
 
 from sklearn.metrics import (
@@ -20,6 +20,14 @@ from sklearn.metrics import (
     confusion_matrix,
     classification_report,
 )
+
+# SHAP para interpretabilidad
+try:
+    import shap
+    SHAP_AVAILABLE = True
+except ImportError:
+    SHAP_AVAILABLE = False
+    logging.warning("SHAP no disponible. Instalar con: pip install shap")
 
 logger = logging.getLogger(__name__)
 
@@ -396,5 +404,167 @@ def generate_cv_comparison_table_classification(
     return df_table
 
 
+def calculate_shap_values_regression(
+    models: Dict[str, Any],
+    X_train: pd.DataFrame,
+    X_test: pd.DataFrame,
+    metrics: pd.DataFrame,
+    n_samples: int = 100
+) -> Dict[str, Any]:
+    """
+    Calcula SHAP values para el mejor modelo de regresión.
+    
+    Args:
+        models: Diccionario con modelos entrenados
+        X_train: Features de entrenamiento
+        X_test: Features de test
+        metrics: DataFrame con métricas (para identificar mejor modelo)
+        n_samples: Número de muestras para calcular SHAP (para velocidad)
+        
+    Returns:
+        Diccionario con SHAP values y estadísticas
+    """
+    if not SHAP_AVAILABLE:
+        logger.warning("SHAP no disponible. Saltando cálculo de SHAP values.")
+        return {}
+    
+    logger.info("="*80)
+    logger.info("CALCULANDO SHAP VALUES - REGRESIÓN")
+    logger.info("="*80)
+    
+    # Obtener mejor modelo
+    best_model_name = metrics.iloc[0]['model']
+    
+    if best_model_name not in models:
+        logger.warning(f"Modelo {best_model_name} no encontrado. Usando primer modelo disponible.")
+        best_model_name = list(models.keys())[0]
+    
+    model = models[best_model_name]
+    
+    # Usar muestra para velocidad (SHAP puede ser lento)
+    if len(X_test) > n_samples:
+        X_test_sample = X_test.sample(n=n_samples, random_state=42)
+        logger.info(f"Usando muestra de {n_samples} instancias para SHAP (de {len(X_test)} totales)")
+    else:
+        X_test_sample = X_test
+    
+    # Seleccionar explainer según tipo de modelo
+    try:
+        if hasattr(model, 'feature_importances_'):
+            # Modelos basados en árboles (Random Forest, Gradient Boosting)
+            explainer = shap.TreeExplainer(model)
+            shap_values = explainer.shap_values(X_test_sample)
+        else:
+            # Modelos lineales (usar KernelExplainer con muestra de background)
+            background = X_train.sample(min(100, len(X_train)), random_state=42)
+            explainer = shap.KernelExplainer(model.predict, background)
+            shap_values = explainer.shap_values(X_test_sample)
+        
+        # Calcular estadísticas de SHAP
+        mean_abs_shap = np.abs(shap_values).mean(axis=0)
+        feature_importance_shap = pd.DataFrame({
+            'feature': X_test_sample.columns,
+            'mean_abs_shap': mean_abs_shap
+        }).sort_values('mean_abs_shap', ascending=False)
+        
+        logger.info(f"\n✓ SHAP values calculados para {best_model_name}")
+        logger.info(f"\nTop 5 features más importantes (SHAP):")
+        for idx, row in feature_importance_shap.head(5).iterrows():
+            logger.info(f"   {row['feature']}: {row['mean_abs_shap']:.4f}")
+        
+        return {
+            'model_name': best_model_name,
+            'feature_importance': feature_importance_shap.to_dict('records'),
+            'explainer_type': 'TreeExplainer' if hasattr(model, 'feature_importances_') else 'KernelExplainer',
+            'n_samples': len(X_test_sample)
+        }
+        
+    except Exception as e:
+        logger.warning(f"Error calculando SHAP values: {str(e)}")
+        return {}
 
+
+def calculate_shap_values_classification(
+    models: Dict[str, Any],
+    X_train: pd.DataFrame,
+    X_test: pd.DataFrame,
+    metrics: pd.DataFrame,
+    n_samples: int = 100
+) -> Dict[str, Any]:
+    """
+    Calcula SHAP values para el mejor modelo de clasificación.
+    
+    Args:
+        models: Diccionario con modelos entrenados
+        X_train: Features de entrenamiento
+        X_test: Features de test
+        metrics: DataFrame con métricas (para identificar mejor modelo)
+        n_samples: Número de muestras para calcular SHAP (para velocidad)
+        
+    Returns:
+        Diccionario con SHAP values y estadísticas
+    """
+    if not SHAP_AVAILABLE:
+        logger.warning("SHAP no disponible. Saltando cálculo de SHAP values.")
+        return {}
+    
+    logger.info("="*80)
+    logger.info("CALCULANDO SHAP VALUES - CLASIFICACIÓN")
+    logger.info("="*80)
+    
+    # Obtener mejor modelo
+    best_model_name = metrics.iloc[0]['model']
+    
+    if best_model_name not in models:
+        logger.warning(f"Modelo {best_model_name} no encontrado. Usando primer modelo disponible.")
+        best_model_name = list(models.keys())[0]
+    
+    model = models[best_model_name]
+    
+    # Usar muestra para velocidad (SHAP puede ser lento)
+    if len(X_test) > n_samples:
+        X_test_sample = X_test.sample(n=n_samples, random_state=42)
+        logger.info(f"Usando muestra de {n_samples} instancias para SHAP (de {len(X_test)} totales)")
+    else:
+        X_test_sample = X_test
+    
+    # Seleccionar explainer según tipo de modelo
+    try:
+        if hasattr(model, 'feature_importances_'):
+            # Modelos basados en árboles (Random Forest, Gradient Boosting)
+            explainer = shap.TreeExplainer(model)
+            shap_values = explainer.shap_values(X_test_sample)
+            # Para clasificación binaria, shap_values puede ser una lista
+            if isinstance(shap_values, list):
+                shap_values = shap_values[1]  # Usar valores para clase positiva
+        else:
+            # Modelos lineales o SVM (usar KernelExplainer con muestra de background)
+            background = X_train.sample(min(100, len(X_train)), random_state=42)
+            explainer = shap.KernelExplainer(model.predict_proba, background)
+            shap_values = explainer.shap_values(X_test_sample)
+            if isinstance(shap_values, list):
+                shap_values = shap_values[1]  # Usar valores para clase positiva
+        
+        # Calcular estadísticas de SHAP
+        mean_abs_shap = np.abs(shap_values).mean(axis=0)
+        feature_importance_shap = pd.DataFrame({
+            'feature': X_test_sample.columns,
+            'mean_abs_shap': mean_abs_shap
+        }).sort_values('mean_abs_shap', ascending=False)
+        
+        logger.info(f"\n✓ SHAP values calculados para {best_model_name}")
+        logger.info(f"\nTop 5 features más importantes (SHAP):")
+        for idx, row in feature_importance_shap.head(5).iterrows():
+            logger.info(f"   {row['feature']}: {row['mean_abs_shap']:.4f}")
+        
+        return {
+            'model_name': best_model_name,
+            'feature_importance': feature_importance_shap.to_dict('records'),
+            'explainer_type': 'TreeExplainer' if hasattr(model, 'feature_importances_') else 'KernelExplainer',
+            'n_samples': len(X_test_sample)
+        }
+        
+    except Exception as e:
+        logger.warning(f"Error calculando SHAP values: {str(e)}")
+        return {}
 

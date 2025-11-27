@@ -302,3 +302,179 @@ game_duration_analysis:
 eda_complete_report:
   type: json.JSONDataset
   filepath: data/08_reporting/eda_complete_report.json
+
+# ============================================================================
+# APRENDIZAJE NO SUPERVISADO - CLUSTERING
+# ============================================================================
+
+elbow_method_results:
+  type: json.JSONDataset
+  filepath: data/08_reporting/elbow_method_results.json
+
+kmeans_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/kmeans_model.pkl
+
+kmeans_labels:
+  type: pickle.PickleDataset
+  filepath: data/07_model_output/kmeans_labels.pkl
+
+kmeans_metrics:
+  type: json.JSONDataset
+  filepath: data/08_reporting/kmeans_metrics.json
+
+dbscan_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/dbscan_model.pkl
+
+dbscan_labels:
+  type: pickle.PickleDataset
+  filepath: data/07_model_output/dbscan_labels.pkl
+
+dbscan_metrics:
+  type: json.JSONDataset
+  filepath: data/08_reporting/dbscan_metrics.json
+
+hierarchical_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/hierarchical_model.pkl
+
+hierarchical_labels:
+  type: pickle.PickleDataset
+  filepath: data/07_model_output/hierarchical_labels.pkl
+
+hierarchical_metrics:
+  type: json.JSONDataset
+  filepath: data/08_reporting/hierarchical_metrics.json
+
+hierarchical_linkage_matrix:
+  type: pickle.PickleDataset
+  filepath: data/07_model_output/hierarchical_linkage_matrix.pkl
+
+gmm_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/gmm_model.pkl
+
+gmm_labels:
+  type: pickle.PickleDataset
+  filepath: data/07_model_output/gmm_labels.pkl
+
+gmm_metrics:
+  type: json.JSONDataset
+  filepath: data/08_reporting/gmm_metrics.json
+
+cluster_patterns_analysis:
+  type: pandas.ParquetDataset
+  filepath: data/08_reporting/cluster_patterns_analysis.parquet
+
+clustering_comparison_table:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/clustering_comparison_table.csv
+  save_args:
+    index: false
+
+# ============================================================================
+# APRENDIZAJE NO SUPERVISADO - REDUCCIÓN DE DIMENSIONALIDAD
+# ============================================================================
+
+pca_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/pca_model.pkl
+
+X_pca:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/X_pca.parquet
+
+pca_metrics:
+  type: json.JSONDataset
+  filepath: data/08_reporting/pca_metrics.json
+
+pca_loadings_analysis:
+  type: pandas.ParquetDataset
+  filepath: data/08_reporting/pca_loadings_analysis.parquet
+
+tsne_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/tsne_model.pkl
+
+X_tsne:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/X_tsne.parquet
+
+tsne_metrics:
+  type: json.JSONDataset
+  filepath: data/08_reporting/tsne_metrics.json
+
+umap_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/umap_model.pkl
+
+X_umap:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/X_umap.parquet
+
+umap_metrics:
+  type: json.JSONDataset
+  filepath: data/08_reporting/umap_metrics.json
+
+# ============================================================================
+# APRENDIZAJE NO SUPERVISADO - DETECCIÓN DE ANOMALÍAS
+# ============================================================================
+
+isolation_forest_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/isolation_forest_model.pkl
+
+isolation_forest_labels:
+  type: pickle.PickleDataset
+  filepath: data/07_model_output/isolation_forest_labels.pkl
+
+isolation_forest_metrics:
+  type: json.JSONDataset
+  filepath: data/08_reporting/isolation_forest_metrics.json
+
+lof_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/lof_model.pkl
+
+lof_labels:
+  type: pickle.PickleDataset
+  filepath: data/07_model_output/lof_labels.pkl
+
+lof_metrics:
+  type: json.JSONDataset
+  filepath: data/08_reporting/lof_metrics.json
+
+anomaly_analysis:
+  type: pandas.ParquetDataset
+  filepath: data/08_reporting/anomaly_analysis.parquet
+
+anomaly_detection_comparison:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/anomaly_detection_comparison.csv
+  save_args:
+    index: false
+
+# ============================================================================
+# INTEGRACIÓN: CLUSTERING COMO FEATURE ENGINEERING
+# ============================================================================
+
+X_train_with_clusters:
+  type: pandas.ParquetDataset
+  filepath: data/04_feature/X_train_with_clusters.parquet
+
+X_test_with_clusters:
+  type: pandas.ParquetDataset
+  filepath: data/04_feature/X_test_with_clusters.parquet
+
+# ============================================================================
+# SHAP VALUES - INTERPRETABILIDAD DE MODELOS
+# ============================================================================
+
+regression_shap_values:
+  type: json.JSONDataset
+  filepath: data/08_reporting/regression_shap_values.json
+
+classification_shap_values:
+  type: json.JSONDataset
+  filepath: data/08_reporting/classification_shap_values.json

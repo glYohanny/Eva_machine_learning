@@ -106,6 +106,53 @@ feature_engineering:
   # Método de escalado
   scaling_method: standard  # standard, minmax, robust
 
+# ============================================================================
+# CONFIGURACIÓN DE APRENDIZAJE NO SUPERVISADO
+# ============================================================================
+
+unsupervised_learning:
+  # ============================================================================
+  # CLUSTERING
+  # ============================================================================
+  clustering:
+    # Número de clusters
+    n_clusters: 5
+    
+    # Rango para método del codo (se convertirá a range en el código)
+    k_range_start: 2
+    k_range_end: 11
+    
+    # DBSCAN
+    dbscan_eps: 0.5
+    dbscan_min_samples: 5
+    
+    # Hierarchical Clustering
+    linkage_method: ward  # ward, complete, average
+    
+  # ============================================================================
+  # REDUCCIÓN DE DIMENSIONALIDAD
+  # ============================================================================
+  dimensionality_reduction:
+    # PCA
+    pca_n_components: null  # null = todos los componentes
+    
+    # t-SNE
+    tsne_n_components: 2
+    tsne_perplexity: 30.0
+    tsne_n_iter: 1000
+    
+    # UMAP
+    umap_n_components: 2
+    umap_n_neighbors: 15
+    umap_min_dist: 0.1
+    
+  # ============================================================================
+  # DETECCIÓN DE ANOMALÍAS
+  # ============================================================================
+  anomaly_detection:
+    contamination: 0.1  # 10% de anomalías esperadas
+    lof_n_neighbors: 20
+
 
 
 

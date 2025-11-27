@@ -37,17 +37,21 @@ Sistema de **Machine Learning en producción** para análisis y predicción de p
 ## 📋 Características
 
 ### **Arquitectura Profesional:**
-- 🔄 **5 Pipelines modulares** con Kedro
+- 🔄 **6 Pipelines modulares** con Kedro (incluyendo aprendizaje no supervisado)
 - 🐳 **Dockerizado** para reproducibilidad
-- 🌊 **Apache Airflow** para orquestación
+- 🌊 **Apache Airflow** para orquestación end-to-end
 - 📊 **CRISP-DM** metodología completa
 - 📝 **18+ documentos** técnicos
 
 ### **Machine Learning:**
 - **5 modelos de regresión:** Linear, Ridge, Lasso, Random Forest, Gradient Boosting
 - **5 modelos de clasificación:** Logistic, Random Forest, Gradient Boosting, SVM, Naive Bayes
-- **Feature Engineering:** 18 features ingenieradas
-- **Evaluación completa:** RMSE, MAE, R², Accuracy, Precision, Recall, F1, AUC-ROC
+- **Aprendizaje No Supervisado:**
+  - **Clustering:** K-Means, DBSCAN, Hierarchical, GMM (4 algoritmos)
+  - **Reducción Dimensional:** PCA, t-SNE, UMAP (3 técnicas)
+  - **Detección de Anomalías:** Isolation Forest, LOF (2 algoritmos)
+- **Feature Engineering:** 18 features ingenieradas + features de clustering
+- **Evaluación completa:** RMSE, MAE, R², Accuracy, Precision, Recall, F1, AUC-ROC, Silhouette, Davies-Bouldin
 
 ---
 
@@ -97,10 +101,14 @@ docker-compose up -d
 
 ```
 league-project/
-├── src/league_project/pipelines/    # 5 Pipelines de ML
+├── src/league_project/pipelines/    # 6 Pipelines de ML
 │   ├── data_cleaning/               # Limpieza de datos
 │   ├── data_exploration/            # Análisis exploratorio (EDA)
 │   ├── data_processing/             # Feature engineering
+│   ├── unsupervised_learning/       # Aprendizaje no supervisado
+│   │   ├── clustering/             # K-Means, DBSCAN, Hierarchical, GMM
+│   │   ├── dimensionality_reduction/ # PCA, t-SNE, UMAP
+│   │   └── anomaly_detection/      # Isolation Forest, LOF
 │   ├── data_science/                # Entrenamiento de modelos
 │   └── evaluation/                  # Evaluación y métricas
 ├── data/                            # Datos y resultados
@@ -252,7 +260,14 @@ league-project/
 - 5 regresión + 5 clasificación
 - **Output:** Modelos en `data/06_models/`
 
-### **5. evaluation**
+### **5. unsupervised_learning**
+- **Clustering:** K-Means, DBSCAN, Hierarchical, GMM con métricas completas
+- **Reducción Dimensional:** PCA (varianza explicada, loadings), t-SNE, UMAP
+- **Detección de Anomalías:** Isolation Forest, LOF
+- **Integración:** Clustering como feature engineering para modelos supervisados
+- **Output:** Modelos, métricas y análisis en `data/06_models/`, `data/07_model_output/`, `data/08_reporting/`
+
+### **6. evaluation**
 - Calcula métricas completas
 - Feature importance
 - **Output:** Reportes JSON en `data/08_reporting/`

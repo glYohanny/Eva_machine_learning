@@ -7,6 +7,7 @@ from league_project.pipelines import data_exploration
 from league_project.pipelines import data_processing
 from league_project.pipelines import data_science
 from league_project.pipelines import evaluation
+from league_project.pipelines import unsupervised_learning
 
 
 def register_pipelines() -> dict[str, Pipeline]:
@@ -29,12 +30,16 @@ def register_pipelines() -> dict[str, Pipeline]:
     dp_pipeline = data_processing.create_pipeline()
     ds_pipeline = data_science.create_pipeline()
     eval_pipeline = evaluation.create_pipeline()
+    unsupervised_pipeline = unsupervised_learning.create_pipeline()
     
-    # Pipeline completo por defecto (ejecuta todos en orden)
-    default_pipeline = dc_pipeline + de_pipeline + dp_pipeline + ds_pipeline + eval_pipeline
+    # Pipeline completo por defecto (ejecuta todos en orden incluyendo no supervisado)
+    default_pipeline = dc_pipeline + de_pipeline + dp_pipeline + unsupervised_pipeline + ds_pipeline + eval_pipeline
     
     # Pipeline de limpieza y exploración (solo análisis inicial)
     eda_pipeline = dc_pipeline + de_pipeline
+    
+    # Pipeline completo con aprendizaje no supervisado
+    full_ml_pipeline = dc_pipeline + de_pipeline + dp_pipeline + unsupervised_pipeline + ds_pipeline + eval_pipeline
     
     return {
         "__default__": default_pipeline,
@@ -43,10 +48,13 @@ def register_pipelines() -> dict[str, Pipeline]:
         "data_processing": dp_pipeline,
         "data_science": ds_pipeline,
         "evaluation": eval_pipeline,
+        "unsupervised_learning": unsupervised_pipeline,
         "eda": eda_pipeline,  # Pipeline combinado de limpieza + exploración
+        "full_ml": full_ml_pipeline,  # Pipeline completo con no supervisado
         "dc": dc_pipeline,  # Alias corto
         "de": de_pipeline,  # Alias corto
         "dp": dp_pipeline,  # Alias corto
         "ds": ds_pipeline,  # Alias corto
         "eval": eval_pipeline,  # Alias corto
+        "unsupervised": unsupervised_pipeline,  # Alias corto
     }

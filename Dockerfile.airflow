@@ -18,8 +18,9 @@ USER airflow
 COPY requirements.txt /tmp/requirements.txt
 
 # Instalar dependencias de Python incluyendo Kedro
+# Nota: Kedro 1.0.0 se instala desde requirements.txt
+# Estas dependencias básicas se instalan primero para optimizar el cache de Docker
 RUN pip install --no-cache-dir --user \
-    kedro~=0.19.0 \
     pandas \
     numpy \
     scikit-learn \

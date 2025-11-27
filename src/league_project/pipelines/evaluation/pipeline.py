@@ -11,6 +11,8 @@ from .nodes import (
     create_classification_report,
     generate_cv_comparison_table_regression,
     generate_cv_comparison_table_classification,
+    calculate_shap_values_regression,
+    calculate_shap_values_classification,
 )
 
 
@@ -72,6 +74,19 @@ def create_pipeline(**kwargs) -> Pipeline:
                 inputs=["classification_metrics", "classification_cv_results"],
                 outputs="classification_cv_comparison_table",
                 name="generate_classification_cv_table_node",
+            ),
+            # SHAP values para interpretabilidad (opcional - solo si SHAP está disponible)
+            node(
+                func=calculate_shap_values_regression,
+                inputs=["regression_models", "X_train_scaled", "X_test_scaled", "regression_metrics"],
+                outputs="regression_shap_values",
+                name="calculate_regression_shap_node",
+            ),
+            node(
+                func=calculate_shap_values_classification,
+                inputs=["classification_models", "X_train_scaled", "X_test_scaled", "classification_metrics"],
+                outputs="classification_shap_values",
+                name="calculate_classification_shap_node",
             ),
         ]
     )

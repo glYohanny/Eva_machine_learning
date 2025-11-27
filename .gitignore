@@ -105,6 +105,9 @@ docs/GUIA_DATOS_CSV.md
 docs/GUIA_PIPELINES_LIMPIEZA_ANALISIS.md
 docs/RESUMEN_PIPELINES.md
 
+# ============ KEDRO VIZ ============
+.viz/
+
 # ============ IDE ============
 .vscode/
 .idea/
